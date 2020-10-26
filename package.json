@@ -19,8 +19,13 @@
   },
   "homepage": "https://github.com/torianyap/FancyTodo#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.4.1",
     "sequelize": "^6.3.5"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
   }
 }

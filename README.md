@@ -1,5 +1,8 @@
 # FancyTodo
 
+**Run**
+npm run dev
+
 **Create Todo**
 ----
   Returns JSON data from new todo
