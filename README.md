@@ -14,12 +14,22 @@
 
 * **Data Params**
 
-  {ntar lah}
+  {
+    title: 'learn REST API',
+    description: 'learn how to create RESTful API with Express and Sequelize',
+    due_date: '2020-10-31'
+  }
 
 * **Success Response:**
 
   * **Code:** 201 <br />
-    **Content:** `{id: 1, title: 'study', description: 'learn VSCode', status: false, due_date: date}`
+    **Content:** {
+      id: 1, 
+      title: 'study', 
+      description: 'learn VSCode', 
+      status: false, 
+      due_date: '2020-10-31'
+      }`
  
 * **Error Response:**
   * **Code:** 400 <br />
