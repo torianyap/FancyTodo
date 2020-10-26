@@ -1,8 +1,38 @@
 # FancyTodo
 
-**Show List Todo**
+**Create Todo**
 ----
-  Return JSON data about all todos
+  Returns JSON data from new todo
+
+* **URL**
+
+  /todos
+
+* **Method:**
+
+  `POST`
+
+* **Data Params**
+
+  {ntar lah}
+
+* **Success Response:**
+
+  * **Code:** 201 <br />
+    **Content:** `{id: 1, title: 'study', description: 'learn VSCode', status: false, due_date: date}`
+ 
+* **Error Response:**
+  * **Code:** 400 <br />
+    **Content:** `{validation errors}`
+
+    OR
+
+  * **Code:** 500 <br />
+    **Content:** `error`
+
+**Read Todo**
+----
+  Returns JSON data about all todos
 
 * **URL**
 
@@ -15,22 +45,37 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{ id : 12 }`
+    **Content:** `[{id: 1, title: 'study', description: 'learn VSCode', status: false, due_date: date}, ...]`
  
 * **Error Response:**
 
-  * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
+  * **Code:** 500 <br />
+    **Content:** `error`
+    
+**Get todo by ID**
+----
+  Returns JSON data about a single todo
 
-  OR
+* **URL**
 
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }`
+  /todos/:id
 
-* **Sample Call:**
+* **Method:**
 
-  <_Just a sample call to your endpoint in a runnable format ($.ajax call or a curl request) - this makes life easier and more predictable._> 
+  `GET`
+  
+*  **URL Params**
 
-* **Notes:**
+   **Required:**
+ 
+   `id=[integer]`
 
-  <_This is where all uncertainties, commentary, discussion etc. can go. I recommend timestamping and identifying oneself when leaving comments here._> 
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `{id: 1, title: 'study', description: 'learn VSCode', status: false, due_date: date}`
+ 
+* **Error Response:**
+
+  * **Code:** 404 <br />
+    **Content:** `{ error }`
