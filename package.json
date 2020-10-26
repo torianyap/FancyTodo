@@ -1,0 +1,26 @@
+{
+  "name": "fancytodo",
+  "version": "1.0.0",
+  "description": "Todo App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/torianyap/FancyTodo.git"
+  },
+  "keywords": [],
+  "author": "torianyap",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/torianyap/FancyTodo/issues"
+  },
+  "homepage": "https://github.com/torianyap/FancyTodo#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.4.1",
+    "sequelize": "^6.3.5"
+  }
+}
