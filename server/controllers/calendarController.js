@@ -12,6 +12,7 @@ class CalendarController {
         })
         .catch(err => {
             next(err)
+            
         })
     }
 }
