@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
 
     static associate(models) {
-
+      User.hasMany(models.ToDo)
     }
   };
   User.init({
@@ -16,11 +16,29 @@ module.exports = (sequelize, DataTypes) => {
         isEmail: {
           args: true,
           msg: 'please insert a valid email'
+        },
+        notEmpty: {
+          args: true,
+          msg: `email can't be empty`
         }
       }
     },
     password: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: `password can't be empty`
+        },
+        isAlphanumeric: {
+          args: true,
+          msg: `password must be alphanumeric`
+        },
+        len: {
+          args: [5,20],
+          msg: `password must be a minimal of 5 and a maximum of 20 characters`
+        }
+      }
     }
   }, {
     sequelize,

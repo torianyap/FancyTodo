@@ -1,7 +1,7 @@
 # FancyTodo
 
 **Run**
-npm run dev
+`npm run dev`
 
 **Create Todo**
 ----

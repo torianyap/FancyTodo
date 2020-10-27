@@ -6,7 +6,8 @@ class ToDoController {
             const payload = {
                 title: req.body.title,
                 description: req.body.description,
-                due_date: req.body.due_date
+                due_date: req.body.due_date,
+                UserId: req.user.id
             }
             const newToDo = await ToDo.create(payload, {
                 returning: true
@@ -23,8 +24,12 @@ class ToDoController {
 
     static async read(req, res) {
         try {
+            const UserId = req.user.id
             const todos = await ToDo.findAll({
-                order: [['id', 'asc']]
+                order: [['id', 'asc']],
+                where: {
+                    UserId: UserId
+                }
             })
             res.status(200).json(todos)
         } catch (error) {
@@ -51,7 +56,7 @@ class ToDoController {
             const payload = {
                 title: req.body.title,
                 description: req.body.description,
-                due_date: req.body.due_date
+                due_date: req.body.due_date,
             }
             const updated = await ToDo.update(payload, {
                 where: {
