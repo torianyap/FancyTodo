@@ -1,7 +1,7 @@
 const {ToDo} = require('../models/index')
 
 class ToDoController {
-    static async create(req, res) {
+    static async create(req, res, next) {
         try {
             const payload = {
                 title: req.body.title,
@@ -13,16 +13,12 @@ class ToDoController {
                 returning: true
             })
             res.status(201).json(newToDo)
-        } catch (error) {
-            if (error.errors) {
-                res.status(400).json(error.errors[0].message)
-            } else {
-                res.status(500).json(error)
-            }
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async read(req, res) {
+    static async read(req, res, next) {
         try {
             const UserId = req.user.id
             const todos = await ToDo.findAll({
@@ -32,26 +28,26 @@ class ToDoController {
                 }
             })
             res.status(200).json(todos)
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async findOne(req, res) {
+    static async findOne(req, res, next) {
         try {
             const id = +req.params.id
             const todo = await ToDo.findByPk(id)
             if (todo) {
                 res.status(200).json(todo)
             } else {
-                res.status(404).json({message: `todo with id ${id} is not found`})
+                throw { msg: `todo with id ${id} is not found`, status: 404 }
             }
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async update(req, res) {
+    static async update(req, res, next) {
         try {
             const payload = {
                 title: req.body.title,
@@ -65,21 +61,17 @@ class ToDoController {
                 returning: true
             })
             if (updated[0] !== 1) {
-                res.status(404).json({message: `todo with id ${+req.params.id} is not found`})
+                throw { msg: `todo with id ${+req.params.id} is not found`, status: 404 }
             } else {
                 res.status(200).json(updated[1][0])
             }
 
-        } catch (error) {
-            if (error.errors) {
-                res.status(400).json(error.errors[0].message)
-            } else {
-                res.status(500).json(error)
-            }
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async finish(req, res) {
+    static async finish(req, res, next) {
         try {
             const finished = await ToDo.update({status: true}, {
                 where: {
@@ -88,16 +80,16 @@ class ToDoController {
                 returning: true
             })
             if (finished[0] !== 1) {
-                res.status(404).json({message: `todo with id ${+req.params.id} is not found`})
+                throw { msg: `todo with id ${+req.params.id} is not found`, status: 404 }
             } else {
                 res.status(200).json(finished[1][0])
             }
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async delete(req, res) {
+    static async delete(req, res, next) {
         try {
             const destroyed = await ToDo.destroy({
                 where: {
@@ -105,12 +97,12 @@ class ToDoController {
                 }
             })
             if (destroyed !== 1) {
-                res.status(404).json({message: `id ${+req.params.id} is not found`})
+                throw { msg: `todo with id ${+req.params.id} is not found`, status: 404 }
             } else {
                 res.status(200).json({msg: `todo deleted successfuly`})
             }
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
 
     }

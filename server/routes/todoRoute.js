@@ -8,9 +8,11 @@ route.use(authenticate)
 route.post('/', ToDoController.create)
 route.get('/', ToDoController.read)
 
-route.get('/:id', authorization ,ToDoController.findOne)
-route.put('/:id', authorization ,ToDoController.update)
-route.patch('/:id', authorization ,ToDoController.finish)
-route.delete('/:id', authorization ,ToDoController.delete)
+route.use('/:id', authorization)
+
+route.get('/:id', ToDoController.findOne)
+route.put('/:id', ToDoController.update)
+route.patch('/:id', ToDoController.finish)
+route.delete('/:id', ToDoController.delete)
 
 module.exports = route

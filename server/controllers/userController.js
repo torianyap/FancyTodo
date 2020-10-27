@@ -3,7 +3,7 @@ const { compare } = require('../helper/bcrypt')
 const { signToken } = require('../helper/jwt')
 
 class UserController {
-    static async register(req, res) {
+    static async register(req, res, next) {
         try {
             const payload = {
                 email: req.body.email,
@@ -15,12 +15,12 @@ class UserController {
                 id: user.id,
                 email: user.email
             }) 
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
     }
 
-    static async login(req, res) {
+    static async login(req, res, next) {
         try {
             const payload = {
                 email: req.body.email,
@@ -34,9 +34,9 @@ class UserController {
             })
 
             if (!user) {
-                res.status(401).json({message: 'username or password is incorrect'})
+                throw { msg: 'username or password is incorrect', status: 401 }
             } else if (!compare(payload.password, user.password)) {
-                res.status(401).json({message: 'username or password is incorrect'})
+                throw { msg: 'username or password is incorrect', status: 401 }
             } else {
                 const payload = {
                     id: user.id,
@@ -46,8 +46,8 @@ class UserController {
                 res.status(200).json({accessToken: token})
             }
 
-        } catch (error) {
-            res.status(500).json(error)
+        } catch (err) {
+            next(err)
         }
     }
 }
