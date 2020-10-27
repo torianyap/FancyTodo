@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
   ToDo.init({
     title: {
       type: DataTypes.STRING,
+      allowNull: false,
       validate: {
+        notNull: {
+          args: true,
+          msg: `title can't be empty`
+        },
         notEmpty: {
           args: true,
           msg: `title can't be empty`
@@ -23,8 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.STRING,
+      allowNull: false,
       validate: {
         notEmpty: {
+          args: true,
+          msg: `description can't be empty`
+        },
+        notNull: {
           args: true,
           msg: `description can't be empty`
         }
@@ -32,8 +42,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       validate: {
         notEmpty: {
+          args: true,
+          msg: `status can't be empty`
+        },
+        notNull: {
           args: true,
           msg: `status can't be empty`
         }
@@ -41,8 +56,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     due_date: {
       type: DataTypes.DATE,
+      allowNull: false,
       validate: {
         notEmpty : {
+          args: true,
+          msg: `due date can't be empty`
+        },
+        notNull: {
           args: true,
           msg: `due date can't be empty`
         },

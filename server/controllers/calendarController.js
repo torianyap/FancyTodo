@@ -2,9 +2,10 @@ const axios = require('axios')
 
 class CalendarController {
     static showHolidays (req, res, next) {
+        const country = req.params.country
         const year = new Date().getFullYear()
         axios({
-            url: `https://calendarific.com/api/v2/holidays?&api_key=${process.env.CALENDERIFIC_TOKEN}&country=id&year=${year}`,
+            url: `https://calendarific.com/api/v2/holidays?&api_key=${process.env.CALENDERIFIC_TOKEN}&country=${country}&year=${year}`,
             method: 'get'
         })
         .then(result => {   
