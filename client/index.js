@@ -6,7 +6,7 @@ function beforeLogin() {
     $('#content').hide()
     $('todos').hide()
     $('#form-addToDo').hide()
-    $('form-updateTodo').hide()
+    $('#form-updateTodo').hide()
 }
 
 function afterLogin() {
@@ -147,7 +147,7 @@ const fetchToDos = () => {
                     <p class="text-right font-weight-bold">${el.title.toUpperCase()}</p>
                     <p class="text-muted">${el.description}</p>
                     <p>${new Date(el.due_date)}</p>
-                    <input type="checkbox" onclick="finishToDo(${el.id})">
+                    Finish <input type="checkbox" onclick="finishToDo(${el.id})">
                     <p class="text-warning btn-link text-left" id="form-update" onclick="updateToDoForm(${el.id})">Update</p>
                     <p class="text-danger btn-link text-right" onclick="deleteToDo(${el.id})">Delete</p>
                     <hr/>
@@ -202,13 +202,14 @@ const addTodo = () => {
 
 $('#addTodo').on('click', () => {
     $('#form-addToDo').show()
+    $('#form-updateTodo').hide()
 })
 
 //updateTodo
 let goingToBeUpdated;
 
 const updateToDo = id => {
-    id = goingToBeUpdated
+    id = goingToBeUpdated.id
     const access_token = localStorage.getItem('access_token')
     const title = $('#update_title').val()
     const description = $('#update_description').val()
@@ -235,8 +236,41 @@ const updateToDo = id => {
 }
 
 const updateToDoForm = (id) => {
+    const access_token = localStorage.getItem('access_token')
+
+    $.ajax({
+        method: 'GET',
+        url: `${SERVER}/todos/${id}`,
+        headers: {
+            access_token
+        }
+    })
+    .done(response => {
+        $('#form-updateTodo').append(`
+            <form onsubmit="updateToDo()">
+            <div class="form-group">
+                <label for="update_title">Title</label>
+                <input type="text" id="update_title" class="form-control" value="${response.title}">
+            </div>
+            <div class="form-group">
+                <label for="update_description">Description</label>
+                <input type="text" id="update_description" class="form-control" value="${response.description}">
+            </div>
+            <div class="form-group">
+                <label for="update_due_date">Due Date</label>
+                <input type="date" id="update_due_date" class="form-control" value="${formatDate(response.due_date)}">
+                <i>due date must be greater than today</i>
+            </div>
+            <button type="submit" class="btn btn-success">Update Task</button>
+        </form>
+        `)
+    })
+
     $('#form-updateTodo').show()
-    goingToBeUpdated = id
+    $('#form-addToDo').hide()
+    .fail(err => {
+        console.log(err)
+    })
 }
 
 //finishTodo

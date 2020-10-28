@@ -75,6 +75,7 @@
 
       <!-- ADD TODO -->
       <div class="container-fluid" id="form-addToDo" style="display: none;">
+        <h3>Add a new task</h3> <br>
         <form onsubmit="addTodo()">
           <div class="form-group">
             <label for="title">Title</label>
@@ -96,22 +97,7 @@
 
       <!-- UPDATE TODO -->
       <div class="container-fluid" id="form-updateTodo" style="display: none;">
-        <form onsubmit="updateToDo()">
-          <div class="form-group">
-            <label for="update_title">Title</label>
-            <input type="text" id="update_title" class="form-control" value="study">
-          </div>
-          <div class="form-group">
-            <label for="update_description">Description</label>
-            <input type="text" id="update_description" class="form-control" value="learn something">
-          </div>
-          <div class="form-group">
-            <label for="update_due_date">Due Date</label>
-            <input type="date" id="update_due_date" class="form-control">
-            <i>due date must be greater than today</i>
-          </div>
-          <button type="submit" class="btn btn-success">Update Task</button>
-        </form>
+        <h3>Update a task</h3> <br>
       </div>
       <!-- END UPDATE TODO -->
 
@@ -119,8 +105,11 @@
     <!-- END TODO -->
 
   </div>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="convertDate.js"></script>
   <script src="index.js"></script>
+
 </body>
 </html>
