@@ -1,12 +1,14 @@
 require('dotenv').config()
 
 const express = require('express')
-const router = require('./server/routes')
-const error_handler = require('./server/middlewares/error_handler')
+const cors = require('cors')
+const router = require('./routes')
+const error_handler = require('./middlewares/error_handler')
 
 const app = express()
 const port = process.env.PORT
 
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(router)
