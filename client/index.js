@@ -188,14 +188,34 @@ function onSignIn(googleUser) {
 
 //logout
 $('#nav-logout').on('click', () => {
-    beforeLogin()
-
-    localStorage.clear()
-    signOut()
     Swal.fire({
-        icon: 'info',
-        title: 'Successfully logged out'
+        title: `Logout`,
+        text: `You're going to be logged out`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Logout'
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Successfully logged out'
+            })
+            beforeLogin()
+            localStorage.clear()
+            signOut()
+
+        } else {
+            Toast.fire({
+                icon: 'info',
+                title: 'cancelled'
+            })
+            afterLogin()
+        }
     })
+
 })
 
 function signOut() {
@@ -236,6 +256,7 @@ const weather = () => {
             icon: 'warning',
             title: `i can't find your location`
         })
+        $('#weather').hide()
     })
 }
 
@@ -424,25 +445,46 @@ const finishToDo = id => {
 //deleteToDo
 const deleteToDo = id => {
     const access_token = localStorage.getItem('access_token')
-    $.ajax({
-            method: 'DELETE',
-            url: `${SERVER}/todos/${id}`,
-            headers: {
-                access_token: access_token
-            }
-        })
-        .done(response => {
-            afterLogin()
+
+    Swal.fire({
+        title: `Delete  Task`,
+        text: `You're going to delete this task`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Delete'
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                method: 'DELETE',
+                url: `${SERVER}/todos/${id}`,
+                headers: {
+                    access_token: access_token
+                }
+            })
+            .done(response => {
+                afterLogin()
+                Toast.fire({
+                    icon: 'success',
+                    title: 'todo successfully deleted'
+                })
+            })
+            .fail(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: err.responseJSON.msg
+                })
+            })
+
+        } else {
             Toast.fire({
-                icon: 'success',
-                title: 'todo successfully deleted'
+                icon: 'info',
+                title: 'cancelled'
             })
-        })
-        .fail(err => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: err.responseJSON.msg
-            })
-        })
+            afterLogin()
+        }
+    })
 }
