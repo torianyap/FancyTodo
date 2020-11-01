@@ -45,8 +45,8 @@ module.exports = (sequelize, DataTypes) => {
           msg: `password must be alphanumeric`
         },
         len: {
-          args: [5,20],
-          msg: `password must be a minimal of 5 and a maximum of 20 characters`
+          args: [6,20],
+          msg: `password must be a minimal of 6 and a maximum of 20 characters`
         }
       }
     }

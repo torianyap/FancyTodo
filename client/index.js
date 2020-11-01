@@ -1,11 +1,28 @@
 const SERVER = 'http://localhost:3000'
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+});
+
 function beforeLogin() {
     $('#register').hide()
+    $('#nav-login').show()
+    $('#nav-register').show()
+    $('#nav-name').hide()
+    $('#nav-logout').hide()
     $('#login').show()
     $('#content').hide()
     $('todos').hide()
     $('#form-addToDo').hide()
+    $('#weather').hide()
     $('#form-updateTodo').hide()
 }
 
@@ -13,12 +30,22 @@ function afterLogin() {
     $('#register').hide()
     $('#login').hide()
     $('#content').show()
+    $('#todos').show()
+    $('#nav-login').hide()
+    $('#nav-name').empty()
+    $('#nav-name').append(`<a class="navbar-brand">${localStorage.getItem('name')}</a>`)
+    $('#nav-name').show()
+    $('#nav-register').hide()
+    $('#nav-logout').show()
     $('#form-addToDo').hide()
     $('#form-updateTodo').hide()
+    $('#weather').show()
+    $('#weather').empty()
     fetchToDos()
+    weather()
 }
 
-$(document).ready( _ => {
+$(document).ready(_ => {
     const token = localStorage.getItem('access_token')
     if (token) {
         afterLogin()
@@ -27,8 +54,21 @@ $(document).ready( _ => {
     }
 })
 
+$('#nav-name').on('click', () => {
+    afterLogin()
+})
+$('.back-btn').on('click', () => {
+    afterLogin()
+}) 
+
 //move to login
 $('#nav-login').on('click', () => {
+    $('#register').hide()
+    $('#login').show()
+    $('#content').hide()
+})
+
+$('#login-sc').on('click', () => {
     $('#register').hide()
     $('#login').show()
     $('#content').hide()
@@ -41,6 +81,12 @@ $('#nav-register').on('click', () => {
     $('#content').hide()
 })
 
+$('#register-sc').on('click', () => {
+    $('#register').show()
+    $('#login').hide()
+    $('#content').hide()
+})
+
 //register
 const register = e => {
     e.preventDefault()
@@ -48,21 +94,31 @@ const register = e => {
     const password = $('#register-pwd').val()
 
     $.ajax({
-        method: 'POST',
-        url: `${SERVER}/users/register`,
-        data: {
-            email,
-            password
-        }
-    })
-    .done(response => {
-        $('#register').hide()
-        $('#login').show()
-        $('#todo').hide()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            method: 'POST',
+            url: `${SERVER}/users/register`,
+            data: {
+                email,
+                password
+            }
+        })
+        .done(response => {
+            $('#register').hide()
+            $('#login').show()
+            $('#todo').hide()
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucess',
+                text: 'Your account has been registered'
+            })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
 }
 
 //login
@@ -73,238 +129,320 @@ const login = e => {
     const password = $('#login-pwd').val()
 
     $.ajax({
-        method: 'POST',
-        url: `${SERVER}/users/login`,
-        data: {
-            email, 
-            password
-        }
-    })
-    .done(response => {
-        $('#register').hide()
-        $('#login').hide()
-        $('#todo').show()
-        const access_token = response.accessToken
+            method: 'POST',
+            url: `${SERVER}/users/login`,
+            data: {
+                email,
+                password
+            }
+        })
+        .done(response => {
+            $('#nav-name').empty()
+            localStorage.setItem('name', email.substring(0, email.indexOf('@')))
+            const access_token = response.accessToken
+            localStorage.setItem('access_token', access_token)
+            afterLogin()
 
-        localStorage.setItem('access_token', access_token)
-        fetchToDos()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            Toast.fire({
+                icon: 'success',
+                title: 'Logged in successfully'
+            })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
 }
 
 function onSignIn(googleUser) {
+    const profile = googleUser.getBasicProfile();
+    const name = profile.gV
     const google_access_token = googleUser.getAuthResponse().id_token;
+
     $.ajax({
-        method:'POST',
-        url: `${SERVER}/users/googleLogin`,
-        data: {
-            google_access_token
-        }
-    })
-    .done(response => {
-        localStorage.setItem('access_token', response.access_token)
-        afterLogin()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            method: 'POST',
+            url: `${SERVER}/users/googleLogin`,
+            data: {
+                google_access_token
+            }
+        })
+        .done(response => {
+            localStorage.setItem('access_token', response.access_token)
+            localStorage.setItem('name',name)
+            $('#nav-name').empty()
+            afterLogin()
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Logged in successfully'
+            })
+
+        })
+        .fail(err => {
+            console.log(err)
+        })
 }
 
 //logout
 $('#nav-logout').on('click', () => {
     beforeLogin()
 
-    localStorage.removeItem('access_token')
+    localStorage.clear()
     signOut()
+    Swal.fire({
+        icon: 'info',
+        title: 'Successfully logged out'
+    })
 })
 
 function signOut() {
     const auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
-      console.log('User signed out.');
-    }
-)};
+        console.log('User signed out.');
+    })
+};
 
-//readAll
+//Weather
+const weather = () => {
+    $('#weather').empty()
+    $.ajax({
+        method: 'GET',
+        url: `${SERVER}/weathers`
+    })
+    .done(response => {
+        console.log(response)
+        $('#weather').append(`
+        <h5>Current Weather</h5>
+        <p><strong>Place</strong>
+        <br /><span id="weather-place">${response.name}</span></p>
+
+        <p><strong>Description</strong>
+        <br /><span id="weather-description">${response.weather[0].main}</span>
+        <img src="${source(response.weather[0].main)}" width="30px" height="30px" id="weather-icon" alt="weather-icon"></p>
+
+        <p><strong>Temperature</strong>
+        <br />Temperature: <span id="weather-temp">${response.main.temp.toFixed(1)}°C</span>
+        <br />Feels Like: <span id="feels">${response.main.feels_like.toFixed(1)}°C</span></p>
+
+        <p><strong>Humidity</strong>
+        <br /><span id="weather-humid">${response.main.humidity}%</span></p>
+        `)
+    })
+    .fail(err => {
+        Toast.fire({
+            icon: 'warning',
+            title: `i can't find your location`
+        })
+    })
+}
+
+//fetchTodos
 const fetchToDos = () => {
     const access_token = localStorage.getItem('access_token')
     $('#todos').empty()
     $.ajax({
-        method: 'GET',
-        url: `${SERVER}/todos`,
-        headers : {
-            access_token: access_token
-        }
-    })
-    .done(response => {
-        console.log(response)
-        if (response[0]) {
-            response.forEach(el => {
-                if(el.status === false) {
-                    $('#todos').append(`        
-                    <p class="text-right font-weight-bold">${el.title.toUpperCase()}</p>
-                    <p class="text-muted">${el.description}</p>
-                    <p>${new Date(el.due_date)}</p>
-                    Finish <input type="checkbox" onclick="finishToDo(${el.id})">
-                    <p class="text-warning btn-link text-left" id="form-update" onclick="updateToDoForm(${el.id})">Update</p>
-                    <p class="text-danger btn-link text-right" onclick="deleteToDo(${el.id})">Delete</p>
-                    <hr/>
-                    `)
-                } else {
-                    $('#todos').append(`        
-                    <p class="text-right font-weight-bold">${el.title.toUpperCase()}</p>
-                    <p class="text-muted">${el.description}</p>
-                    <p>${new Date(el.due_date)}</p>
-                    Finish <input type="checkbox" checked>
-                    <p class="text-danger btn-link text-right" onclick="deleteToDo(${el.id})">Delete</p>
-                    <hr/>
-                    `)
-                }
+            method: 'GET',
+            url: `${SERVER}/todos`,
+            headers: {
+                access_token: access_token
+            }
+        })
+        .done(response => {
+            if (response[0]) {
+                response.forEach(el => {
+                    if (el.status === false) {
+                        $('#todos').append(`
+                            <div class="col my-2 p-3 card shadow-lg" style="background-color: white; margin-top: 50px; width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center"><strong>${el.title}</strong></h5>
+                                    <h6 class="card-subtitle">
+                                        ${el.description} <br> <br>
+                                        <span>Due at: ${formatDate(el.due_date)}</span>
+                                    </h6>
+                                    <hr />
+                                    <p class="card-text">
+                                        Finish Task <input type="checkbox" onclick="finishToDo(${el.id})"> <br>
+                                        <a class="card-link btn-outline-warning" href="#" onclick="updateToDoForm(${el.id}, '${el.title}', '${el.description}', '${el.due_date}')">Update Task</a>
+                                        <a class="card-link btn-outline-danger" href="#" onclick="deleteToDo(${el.id})">Delete Task </a>
+                                    </p>
+                                </div>
+                            </div>`)
+                    } else {
+                        $('#todos').append(`
+                            <div class="col my-2 p-3 card" style="background-color: lightgrey; margin-top: 50px; width: 18rem;">
+                                <div class="card-body text-dark text-muted">
+                                    <h5 class="card-title text-center"><strong><strike>${el.title}</strike></strong></h5>
+                                    <h6 class="card-subtitle">
+                                        ${el.description} <br> <br>
+                                        <span>Due at: ${formatDate(el.due_date)}</span>
+                                    </h6>
+                                    <hr />
+                                    <p class="card-text">
+                                        Task Finished <input type="checkbox" checked disabled> <br>
+                                        <a class="card-link btn-outline-danger" href="#" onclick="deleteToDo(${el.id})">Delete Task </a>
+                                    </p>
+                                </div>
+                            </div>`)
+                    }
+                })
+            } else {
+                $('#todos').append(`
+                <h5 class="text-left">There's nothing here <br>Start adding some task</h5>`)
+            }
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: err.responseJSON.msg
             })
-        } else {
-            $('#todos').append(`<h5 class="d-flex justify-content-center">There's nothing here</h5> <h5 class="d-flex justify-content-center">Start adding some task</h5>`)
-        }
-    })
-    .fail(err => {
-        console.log(err)
-    })
+        })
 }
 
 //addTodo
 const addTodo = () => {
     const access_token = localStorage.getItem('access_token')
-    const title = $('#title').val()
-    const description = $('#description').val()
-    const due_date = $('#due_date').val()
+    const title = $('#add_title').val()
+    const description = $('#add_description').val()
+    const due_date = $('#add_due_date').val()
 
     $.ajax({
-        method: 'POST',
-        url: `${SERVER}/todos`,
-        data: {
-            title,
-            description,
-            due_date
-        },
-        headers: {
-            access_token
-        }
-    })
-    .done(response => {
-        afterLogin()
+            method: 'POST',
+            url: `${SERVER}/todos`,
+            data: {
+                title,
+                description,
+                due_date
+            },
+            headers: {
+                access_token
+            }
+        })
+        .done(response => {
+            afterLogin()
+            Toast.fire({
+                icon: 'success',
+                title: 'ToDo added successfully'
+            })
 
-    })
-    .fail(err => {
-        console.log(err)
-    })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
+        .always(() => {
+            $('#add_title').val("")
+            $('#add_description').val("")
+            $('#add_due_date').val("")
+        })
 }
 
 $('#addTodo').on('click', () => {
+    $('#todos').hide()
     $('#form-addToDo').show()
     $('#form-updateTodo').hide()
 })
 
 //updateTodo
-let goingToBeUpdated;
+let idTemp;
 
-const updateToDo = id => {
-    id = goingToBeUpdated.id
+const updateToDo = _ => {
     const access_token = localStorage.getItem('access_token')
-    const title = $('#update_title').val()
-    const description = $('#update_description').val()
-    const due_date = $('#update_due_date').val()
+    const title = $('#edit_title').val()
+    const description = $('#edit_description').val()
+    const due_date = $('#edit_due_date').val()
 
     $.ajax({
-        method: 'PUT',
-        url: `${SERVER}/todos/${id}`,
-        headers: {
-            access_token: access_token
-        },
-        data: {
-            title,
-            description,
-            due_date
-        }
-    })
-    .done(response => {
-        afterLogin()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            method: 'PUT',
+            url: `${SERVER}/todos/${idTemp}`,
+            headers: {
+                access_token: access_token
+            },
+            data: {
+                title,
+                description,
+                due_date
+            }
+        })
+        .done(response => {
+            afterLogin()
+            Toast.fire({
+                icon: 'success',
+                title: `${response.title} has been updated`
+            })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
 }
 
-const updateToDoForm = (id) => {
-    const access_token = localStorage.getItem('access_token')
-
-    $.ajax({
-        method: 'GET',
-        url: `${SERVER}/todos/${id}`,
-        headers: {
-            access_token
-        }
-    })
-    .done(response => {
-        $('#form-updateTodo').append(`
-            <form onsubmit="updateToDo()">
-            <div class="form-group">
-                <label for="update_title">Title</label>
-                <input type="text" id="update_title" class="form-control" value="${response.title}">
-            </div>
-            <div class="form-group">
-                <label for="update_description">Description</label>
-                <input type="text" id="update_description" class="form-control" value="${response.description}">
-            </div>
-            <div class="form-group">
-                <label for="update_due_date">Due Date</label>
-                <input type="date" id="update_due_date" class="form-control" value="${formatDate(response.due_date)}">
-                <i>due date must be greater than today</i>
-            </div>
-            <button type="submit" class="btn btn-success">Update Task</button>
-        </form>
-        `)
-    })
-
+const updateToDoForm = (id, title, description, due_date) => {
+    afterLogin()
     $('#form-updateTodo').show()
-    $('#form-addToDo').hide()
-    .fail(err => {
-        console.log(err)
-    })
+    $('#edit_title').val(title)
+    $('#edit_description').val(description)
+    $('#edit_due_date').val(formatDate(due_date))
+    idTemp = id
+
 }
 
 //finishTodo
 const finishToDo = id => {
     const access_token = localStorage.getItem('access_token')
     $.ajax({
-        method: 'PATCH',
-        url: `${SERVER}/todos/${id}`,
-        headers: {
-            access_token: access_token
-        }
-    })
-    .done(response => {
-        afterLogin()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            method: 'PATCH',
+            url: `${SERVER}/todos/${id}`,
+            headers: {
+                access_token: access_token
+            }
+        })
+        .done(response => {
+            afterLogin()
+            Toast.fire({
+                icon: 'success',
+                title: `you have finished todo ${response.title}`
+            })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
 }
 
 //deleteToDo
 const deleteToDo = id => {
     const access_token = localStorage.getItem('access_token')
     $.ajax({
-        method: 'DELETE',
-        url: `${SERVER}/todos/${id}`,
-        headers: {
-            access_token: access_token
-        }
-    })
-    .done(response => {
-        afterLogin()
-    })
-    .fail(err => {
-        console.log(err)
-    })
+            method: 'DELETE',
+            url: `${SERVER}/todos/${id}`,
+            headers: {
+                access_token: access_token
+            }
+        })
+        .done(response => {
+            afterLogin()
+            Toast.fire({
+                icon: 'success',
+                title: 'todo successfully deleted'
+            })
+        })
+        .fail(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.responseJSON.msg
+            })
+        })
 }

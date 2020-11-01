@@ -1,115 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-signin-client_id" content="1010406052991-eci8se8f8d240ilstq09dektdqpmniuf.apps.googleusercontent.com">
+  <meta name="google-signin-client_id"
+    content="1010406052991-eci8se8f8d240ilstq09dektdqpmniuf.apps.googleusercontent.com">
 
-  <link 
-  rel="stylesheet" 
-  href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" 
-  integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" 
-  crossorigin="anonymous">
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+
+  <!-- ICON -->
+  <script type="text/javascript" src="icon.json"></script>
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="style.css">
 
   <title>Fancy ToDo</title>
 </head>
+
 <body>
+
   <!-- NAV -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand">FancyToDo</a>
-    <a class="navbar-brand" href="#" id="nav-register">Register</a>
-    <a class="navbar-brand" href="#" id="nav-login">Login</a>
-    <a href="#" class="navbar-brand" id="nav-logout">Logout</a>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand text-light">FancyToDo</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a href="#" class="navbar-brand" id="nav-register">Register</a>
+        </li>
+        <li class="nav-item active">
+          <a href="#" class="navbar-brand" id="nav-login">Login</a>
+        </li>
+        <li class="nav-item" id="nav-name"></li>
+        <li class="nav-item active">
+          <a href="#" class="navbar-brand" id="nav-logout">Logout</a>
+        </li>
+      </ul>
     </div>
   </nav>
   <!-- END NAV -->
 
-  <div class="container mt-4 p-1">
-    <!-- REGISTER -->
-    <section class="container-fluid" id="register">
-      <h3>Register</h3><br>
+  <!-- REGISTER -->
+  <section class="container-xl text-center" id="register">
+    <form class="form-signin bg-light shadow-lg rounded text-dark" onsubmit="register(event)">
+      <h1 class="h3 mb-3 font-weight-normal">Register</h1>
 
-      <form onsubmit="register(event)">
-        <div class="form-group">
-          <label for="register-email">Email</label>
-          <input type="email" id="register-email" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="register-pwd">Password</label>
-          <input type="password" id="register-pwd" class="form-control">
-        </div>
-        <button class="btn btn-primary" type="submit">Register</button>
-      </form> 
-    </section>
-    <!-- END REGISTER -->
-
-    <!-- LOGIN -->
-    <section class="container-fluid" id="login">
-      <h3>Login</h3><br>
-      
-      <form onsubmit="login(event)" >
-        <div class="form-group">
-          <label for="login-email">Email</label>
-          <input type="email" name="login-email" id="login-email" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="login-pwd">Password</label>
-          <input type="password" name="login-pwd" id="login-pwd" class="form-control">
-        </div>
-        <button class="btn btn-primary" type="submit">Login</button> <br> <br>
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
-      </form> <br>
-    </section>
-    <!-- END LOGIN -->
-
-    <!-- TODO -->
-    <section id="content" class="container-fluid">
-      <h1 class="d-flex justify-content-center"> Here Are Your ToDo list</h1>
-
-      <br> <br>
-
-      <button class="btn btn-primary" id="addTodo">Add a task</button>
-      <div class="col-4 mt-5" id="todos"></div>
-
+      <label for="register-email">Email</label>
+      <input type="email" id="register-email" placeholder="johndoe@mail.com" class="form-control" required=""
+        autofocus="">
       <br>
+      <label for="register-pwd">Password</label>
+      <input type="password" id="register-pwd" required="" class="form-control" required="">
 
-      <!-- ADD TODO -->
-      <div class="container-fluid" id="form-addToDo" style="display: none;">
-        <h3>Add a new task</h3> <br>
-        <form onsubmit="addTodo()">
-          <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" class="form-control" placeholder="study">
-          </div>
-          <div class="form-group">
-            <label for="description">Description</label>
-            <input type="text" id="description" class="form-control" placeholder="learn something">
-          </div>
-          <div class="form-group">
-            <label for="due_date">Due Date</label>
-            <input type="date" id="due_date" class="form-control">
-            <i>due date must be greater than today</i>
-          </div>
-          <button type="submit" class="btn btn-success">Add Task</button>
-        </form>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+      <br>
+      <div class="checkbox mb-3">
+        <p>Already have an acount ? <br>
+          <a href="#" id="login-sc">Login</a> here
+        </p>
       </div>
+      <br>
+      <!-- Google Sign In Button -->
+      <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+    </form>
+  </section>
+  <!-- END REGISTER -->
+
+  <!-- LOGIN -->
+  <section class="container-xl text-center" id="login">
+    <form class="form-signin bg-light rounded shadow-lg text-dark" onsubmit="login(event)">
+      <h1 class="h3 mb-3 font-weight-normal">Login</h1>
+
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="johndoe@mail.com" class="form-control" required="" autofocus="">
+      <br>
+      <label for="login-pwd">Password</label>
+      <input type="password" id="login-pwd" required="" class="form-control" required="">
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+      <br>
+      <div class="checkbox mb-3">
+        <p>Don't have an acount ? <br>
+          <a href="#" id="register-sc">Register</a> here
+        </p>
+      </div>
+      <br>
+      <!-- Google Sign In Button -->
+      <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    </form>
+  </section>
+  <!-- END LOGIN -->
+
+  <!-- CONTENT -->
+  <section id="content" style="width: 100%; height: 100%" class="container-fluid">
+    <div id="home" style="margin-top:50px;" class="container-xl">
+      <h1 class="text-center"><b>Here Are Your Todos</b></h1>
+      <br>
+      <button class="btn btn-outline-primary" id="addTodo">Add A New Task</button>
+      <br> <br>
+      <section>
+        <div id="todos" class="row row-cols-2"></div>
+      </section>
+ 
+      <br>
+      <!-- ADD TODO -->
+      <section id="form-addToDo" class="container">
+        <div class="row justify-content-center mt-5 ">
+          <div class="col-4">
+            <div class="shadow-lg p-5 mb-5 bg-white rounded">
+              <h5 class="mb-4"><b>Add a new task</b></h5>
+              <form onsubmit="addTodo()">
+                <div class="form-group">
+                  <label for="add_title">Title</label>
+                  <input type="text" id="add_title" class="form-control" placeholder="Board Meeting" required>
+                </div>
+                <div class="form-group">
+                  <label for="add_description">Description</label>
+                  <input type="text" id="add_description" class="form-control" placeholder="Insert Desciption here"
+                    required>
+                </div>
+                <div class="form-group">
+                  <label for="add_due_date">Due Date</label>
+                  <input type="date" id="add_due_date" class="form-control" required>
+                  <i>due date must be greater than today</i>
+                </div> <br> <br>
+                <button type="submit" class="btn btn-outline-success">Add Task</button>
+              </form> <br>
+              <button class="btn btn-outline-primary back-btn">Back</button>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- END ADD TODO -->
 
       <!-- UPDATE TODO -->
-      <div class="container-fluid" id="form-updateTodo" style="display: none;">
-        <h3>Update a task</h3> <br>
-      </div>
+      <section id="form-updateTodo" class="container">
+        <div class="row justify-content-center mt-5 ">
+          <div class="col-4">
+            <div class="shadow-lg p-5 mb-5 bg-white rounded">
+              <h5 class="mb-4"><b>Edit task</b></h5>
+              <form onsubmit="updateToDo()">
+                <div class="form-group">
+                  <label for="edit_title">Title</label>
+                  <input type="text" id="edit_title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit_description">Description</label>
+                  <input type="text" id="edit_description" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit_due_date">Due Date</label>
+                  <input type="date" id="edit_due_date" class="form-control" required>
+                  <i>due date must be greater than today</i>
+                </div> <br> <br>
+                <button type="submit" class="btn btn-outline-success">Edit Task</button>
+              </form> <br>
+              <button class="btn btn-outline-primary back-btn">Back</button>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- END UPDATE TODO -->
 
-    </section>
-    <!-- END TODO -->
+      <!-- WEATHER -->
+      <div class="container-lg card p-5 mb-5 shadow-lg" style="width: 350px; height: 400px; float: left;" id="weather"></div>
+    </div>
 
-  </div>
+  </section>
 
+  <!-- ajax -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- sweet alert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <!-- google sign in -->
   <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <script src="convertDate.js"></script>
+  <!-- scripts -->
+  <script src="functions.js"></script>
   <script src="index.js"></script>
 
 </body>
+
 </html>
