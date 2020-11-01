@@ -119,6 +119,9 @@ const register = e => {
                 text: err.responseJSON.msg
             })
         })
+        .always(() => {
+            $('#register-pwd').val("")
+        })
 }
 
 //login
@@ -154,6 +157,9 @@ const login = e => {
                 title: 'Error',
                 text: err.responseJSON.msg
             })
+        })
+        .always(() => {
+            $('#login-pwd').val("")
         })
 }
 
