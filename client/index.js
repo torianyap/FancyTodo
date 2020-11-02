@@ -1,4 +1,4 @@
-const SERVER = 'http://localhost:3000'
+const SERVER = 'https://fancy-todo-tori.herokuapp.com'
 
 const Toast = Swal.mixin({
     toast: true,
@@ -113,6 +113,7 @@ const register = e => {
             })
         })
         .fail(err => {
+            console.log(err)
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -165,7 +166,7 @@ const login = e => {
 
 function onSignIn(googleUser) {
     const profile = googleUser.getBasicProfile();
-    const name = profile.gV
+    const name = profile.getName()
     const google_access_token = googleUser.getAuthResponse().id_token;
 
     $.ajax({

@@ -34,6 +34,9 @@ function source(description) {
         case "sunny":
             source = "https://www.flaticon.com/svg/static/icons/svg/2917/2917242.svg"
             break;
+        case "clear":
+            source = "https://www.flaticon.com/svg/static/icons/svg/2917/2917242.svg"
+            break;
         case "windy":
             source = "https://www.flaticon.com/svg/static/icons/svg/2917/2917242.svg"
             break;
