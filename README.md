@@ -1,5 +1,8 @@
 # FancyTodo
 
+* Web: <br /> 
+  https://fancy-to-do-5ee22.web.app/
+----
 List of available endpoints:
 * POST /register
 * POST /login
